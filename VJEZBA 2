@@ -1,0 +1,153 @@
+/*2. Definirati strukturu osoba (ime, prezime, godina rođenja) i napisati program koji:
+a) dinamički dodaje novi element na početak liste,
+b) ispisuje listu,
+c) dinamički dodaje novi element na kraj liste,
+d) pronalazi element u listi (po prezimenu),
+e) briše određeni element iz liste.
+U zadatku se ne smiju koristiti globalne varijable*/
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAX_LEN 64
+
+typedef struct osoba* Pozicija;
+typedef struct osoba
+{
+	char ime[MAX_LEN];
+	char prezime[MAX_LEN];
+	int godinarodenja;
+	Pozicija next;
+}Osoba;
+
+void UnosP(Pozicija);
+void Ispis(Pozicija);
+void UnosK(Pozicija);
+void TraziPoPrez(Pozicija);
+void BrisiElement(Pozicija);
+void BrisiListu(Pozicija);
+
+
+int main() {
+
+	Osoba head;
+	head.next = NULL;
+	char izbor = '\0';
+	char prezime[MAX_LEN];
+	while (izbor != 'z')
+	{
+		printf("1 - Unos na pocetak liste\n");
+		printf("2 - Ispis liste\n");
+		printf("3 - Unos na kraj liste\n ");
+		printf("4 - Trazi po prezimenu\n "); 
+		printf("5 - Brisi osobu(po prezimenu)\n"); 
+		printf("0 - Kraj rada\n"); 
+		printf("\n");
+		printf("Vas izbor je: \n");
+		scanf(" %c", &izbor);
+		switch (izbor)
+		{
+		case '1':
+			UnosP(&head);
+				printf("\n");
+			break;
+		case '2':
+			Ispis(head.next);
+			printf("\n");
+			break;
+		case '3':
+			UnosK(&head);
+			printf("\n");
+			break;
+		case '4':
+			TraziPoPrez(head.next);
+			printf("\n");
+			break;
+		case '5':
+			BrisiElement(&head);
+			printf("\n");
+			break;
+		case 'z':
+			printf("Izlaz");
+			printf("\n");
+			break;
+		default:
+			printf("\nNepostojeci izbor\n");
+			printf("\n");
+			break;
+		}
+	}
+	return 0;
+}
+
+void UnosP(Pozicija P) {
+	Pozicija q = NULL;
+	q = (Pozicija*)malloc(sizeof(Osoba));
+	if (q == NULL) {
+		printf("GREŠKA!!! Alokacija memorije nije uspjela\n");
+	}
+	else {
+		printf("Unesite ime, prezime i godinu rodenja\n");
+		scanf(" %s %s %d", q->ime, q->prezime, &q->godinarodenja);
+		q->next = P->next;
+		P->next = q;
+	}
+}
+void Ispis(Pozicija P) {
+	printf("Lista:\n");
+	if (P == NULL) {
+		printf("Lista je prazna\n");
+	}
+	while (P != NULL) {
+		printf(" %s %s %d\n", P->ime, P->prezime, P->godinarodenja);
+		P = P->next;
+	}
+}
+void UnosK(Pozicija P) {
+	while (P->next != NULL) {
+		P = P->next;
+	}
+	UnosP(P);
+}
+void TraziPoPrez(Pozicija P) {
+	char TrazenoPrezime[64];
+	printf("Unesite prezime osobe koju trazite:\t");
+	scanf(" %s", TrazenoPrezime);
+	while (P->next != NULL && _strcmpi(P->prezime, TrazenoPrezime) != 0) {
+		P = P->next;
+	}
+	if (P != NULL) {
+		printf("Trazena osoba: %s %s %d\n", P->ime, P->prezime, P->godinarodenja);
+	}
+	else {
+		printf("Osoba ne postoji\n");
+	}
+}
+void BrisiElement(Pozicija P) {
+	Pozicija temp;
+	char name[64];
+	printf("Unesite prezime osobe koju zelite izbrisat:\t");
+	scanf(" %s", name);
+	while (P != NULL && _strcmpi(P->next->prezime, name) != 0) {
+		P = P->next;
+	}
+	if (P != NULL) {
+		temp = P->next;
+		P->next = temp->next;
+		printf("Osoba %s %s %d je izbrisana\n", temp->ime, temp->prezime, temp->godinarodenja);
+		free(temp);
+	}
+	else {
+		printf("Osoba ne postoji\n");
+	}
+}
+void BrisiListu(Pozicija P) {
+	Pozicija temp;
+	while (P->next != NULL) {
+		temp = P->next;
+		P->next = temp->next;
+		free(temp);
+	}
+}
+
